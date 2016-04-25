@@ -1,11 +1,18 @@
 # pytisean
 
-Python wrapper for calling the functions supplied in the `TISEAN` package developed by Rainer Hegger, Holger Kantz
- and Thomas Schreiber - see http://www.mpipks-dresden.mpg.de/~tisean/
+Python wrapper for calling functions supplied in the `TISEAN` package
+<sup>[1](#myfootnote1)</sup>
+for nonlinear time series analysis  (http://www.mpipks-dresden.mpg.de/~tisean/).
+
+<a name="myfootnote1">[1]</a>: R. Hegger, H. Kantz, and T. Schreiber, *Practical implementation of nonlinear time series methods: The TISEAN package*, CHAOS 9, 413 (1999).
+Preprint available:
+[html](http://www.mpipks-dresden.mpg.de/~tisean/Tisean_3.0.1/index.html),
+[other](http://www.mpipks-dresden.mpg.de/~tisean/Tisean_3.0.1/index.html).
 
 
 ### Prerequisites
-* `TISEAN` must be installed and in your path.
+* `TISEAN` must be installed and in your path - the code is not included here
+* This software has so far only been tested on OS X but  should be easy to port to Linux/Windows. Suggestions are welcome!
 
 To use this package first import `pytisean`, `numpy` and `matplotlib`:
 
@@ -62,3 +69,6 @@ plt.show()
 ```
 
 ![Data and autocorrelation](doc/corr.png "Data and autocorrelation")
+
+## TODO
+* Add support for Windows and Linux
