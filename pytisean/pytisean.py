@@ -16,7 +16,7 @@ __email__ = "bogeholm@nbi.ku.dk"
 __status__ = "Development"
 
 # Directory for temporary files
-DIRSTRING = '/private/tmp/'
+DIRSTR = '/private/tmp/'
 # Prefix to identify these files
 PREFIXSTR = 'pytisean_temp_'
 # suffix - TISEAN likes .dat
@@ -38,7 +38,7 @@ def gentmpfile():
     """
     fhandle = tempfile.mkstemp(prefix=genfilename(),
                                suffix=SUFFIXSTR,
-                               dir=DIRSTRING,
+                               dir=DIRSTR,
                                text=True)
     return fhandle
 
