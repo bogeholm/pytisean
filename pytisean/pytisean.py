@@ -1,4 +1,4 @@
-""" Wrapper to TISEAN files
+""" Wrapper to TISEAN files.
 """
 
 import tempfile
