@@ -9,10 +9,7 @@ setup(name='pytisean',
       url='https://github.com/bogeholm/pytisean',
       install_requires=[
           'numpy',
-          'tempfile',
-          'subprocess',
-          'os',
-          'time'
+          'matplotlib',
           ],
       packages=['pytisean'],
       zip_safe=False)

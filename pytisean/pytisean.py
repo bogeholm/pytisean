@@ -156,37 +156,3 @@ def tiseano(command, *args, silent=False):
 
     # We assume that the user wants the (error) message as well.
     return res, err_string
-
-
-if __name__ == '__main__':
-    import matplotlib.pyplot as plt
-    plt.ion()
-    plt.close('all')
-
-    # Generate 5000 iterates of the henon map
-    henon, err = tiseano('henon', '-l5000')
-
-    # Plot and prettyfi
-    fig, ax = plt.subplots(1, 1)
-    ax.scatter(henon[:, 0], henon[:, 1], color='k', s=0.1)
-    ax.set_title('Henon map')
-    ax.set_xlabel(r'$x$', fontsize=16)
-    ax.set_ylabel(r'$y$', fontsize=16)
-
-    # Generate some data and compute the autocorrelation
-    N = 1000
-    t = np.linspace(0, N/10*np.pi, N)
-    x = np.sin(t) + 0.2*np.random.randn(N)
-    acf, err = tiseanio('corr', '-D', 50, data=x)
-
-    # Plot and prettyfi
-    fig, ax = plt.subplots(2, 1)
-    ax[0].set_title(r'Data and autodorrelation')
-    ax[0].plot(t, x)
-    ax[1].plot(acf[:, 0], acf[:, 1])
-    ax[0].set_xlabel(r'$t$', fontsize=16)
-    ax[0].set_ylabel(r'$x$', fontsize=16)
-    ax[1].set_xlabel(r'Lag $k$', fontsize=16)
-    ax[1].set_ylabel(r'ACF $\rho(k)$', fontsize=16)
-
-    plt.draw()
