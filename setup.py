@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='pytisean',
-      version='0.1',
+      version='0.1.1',
       description='Python wrapper for the TISEAN package',
       author='Troels Bogeholm Mikkelsen',
       author_email='bogeholm@nbi.ku.dk',

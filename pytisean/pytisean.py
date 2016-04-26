@@ -72,8 +72,6 @@ def tiseanio(command, *args, data=None, silent=False):
         arglist = [str(a) for a in args]
         commandargs = [command, fullname_in] + arglist + ['-o', fullname_out]
 
-    print(commandargs)
-
     # We will clean up irregardless of following success.
     try:
         # Save the input to the temporary 'in' file

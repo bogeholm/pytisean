@@ -43,6 +43,6 @@ ax2[1].set_ylabel(r'ACF $\rho_x(k)$', fontsize=16)
 
 plt.show()
 
-# Save for docs
-fig1.savefig('henon.png', dpi=600, transparent=True)
-fig2.savefig('corr.png', dpi=600, transparent=True)
+# Save?
+#fig1.savefig('henon.png', dpi=600, transparent=True)
+#fig2.savefig('corr.png', dpi=600, transparent=True)
