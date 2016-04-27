@@ -9,6 +9,9 @@ Preprint available:
 [html](http://www.mpipks-dresden.mpg.de/~tisean/Tisean_3.0.1/index.html),
 [other](http://www.mpipks-dresden.mpg.de/~tisean/Tisean_3.0.1/index.html).
 
+<div class="alert alert-warning">
+  <strong>`pytisean` Does not yet support `TISEAN` functions with multiple output files such as `d2`.</strong>
+</div>
 
 ### Prerequisites
 * `TISEAN` must be installed and in your path - the code is not included here
@@ -71,4 +74,5 @@ plt.show()
 ![Data and autocorrelation](doc/corr.png "Data and autocorrelation")
 
 ## TODO
+* Add support for multiple output files
 * Add support for Windows and Linux
