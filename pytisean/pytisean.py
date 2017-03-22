@@ -16,7 +16,7 @@ __email__ = "bogeholm@nbi.ku.dk"
 __status__ = "Development"
 
 # Directory for temporary files
-DIRSTR = '/private/tmp/'
+DIRSTR = '/tmp/'
 # Prefix to identify these files
 PREFIXSTR = 'pytisean_temp_'
 # suffix - TISEAN likes .dat
@@ -85,7 +85,7 @@ def tiseanio(command, *args, data=None, silent=False):
         # Communicate with the subprocess
         (_, err_bytes) = subp.communicate()
         # Read the temporary 'out' file
-        res = np.loadtxt(fullname_out)#, delimiter='\t')
+        res = np.loadtxt(fullname_out, comments='#')#, delimiter='\t')
         # We will read this
         err_string = err_bytes.decode('utf-8')
 
