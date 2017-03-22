@@ -89,7 +89,7 @@ def tiseanio(command, *args, data=None, silent=False):
         # Communicate with the subprocess
         (_, err_bytes) = subp.communicate()
         # Read the temporary 'out' file
-        res = np.loadtxt(fullname_out, comments='#')#, delimiter='\t')
+        res = np.loadtxt(fullname_out)#, delimiter='\t')
         # We will read this
         err_string = err_bytes.decode('utf-8')
 
