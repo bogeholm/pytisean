@@ -4,6 +4,7 @@
 import tempfile
 import subprocess
 import os
+from sys import platform as _platform
 from time import strftime
 import numpy as np
 
@@ -16,7 +17,10 @@ __email__ = "bogeholm@nbi.ku.dk"
 __status__ = "Development"
 
 # Directory for temporary files
-DIRSTR = '/private/tmp/'
+if "linux" in _platform:
+    DIRSTR = '/tmp/'
+elif _platform == "darwin":
+    DIRSTR = '/private/tmp/'
 # Prefix to identify these files
 PREFIXSTR = 'pytisean_temp_'
 # suffix - TISEAN likes .dat
