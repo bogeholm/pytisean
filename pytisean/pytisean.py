@@ -7,6 +7,7 @@ import os
 from sys import platform as _platform
 from time import strftime
 import numpy as np
+from collections import OrderedDict
 
 __author__ = "Troels Bogeholm Mikkelsen"
 __copyright__ = "Troels Bogeholm Mikkelsen 2016"
@@ -46,7 +47,49 @@ def gentmpfile():
                                text=True)
     return fhandle
 
-def tiseanio(command, *args, data=None, silent=False):
+def _output_parser_remover(command, outFile_base, legacy=True):
+    """ Parser for output
+    Some tisean command, like d2, output multiple files, to handle this case,
+    wrapper will find each file and load each into a numpy array.
+
+    In legacy mode:
+        * for single-file-output command, an array is returned;
+        * for multiple-file-output command, a dictionary with output filetype
+          as keyword is returned;
+    In non-legacy mode:
+        * Dictionary of entry format
+            {keyword:output_np_array}
+          will be returned.
+        * For single-file-output command, keyword is "out";
+        * For multiple-file-output command, keyword is filetype of each output
+          file
+
+    This routine also takes over the temporary output file's removal
+    """
+    output_data = OrderedDict();
+    if command == 'd2':
+        outFile_c2 = outFile_base+'.c2'
+        outFile_d2 = outFile_base+'.d2'
+        outFile_h2 = outFile_base+'.h2'
+        try:
+            output_data['c2'] = np.loadtxt(outFile_c2)
+            output_data['d2'] = np.loadtxt(outFile_d2)
+            output_data['h2'] = np.loadtxt(outFile_h2)
+        finally:
+            os.remove(outFile_c2)
+            os.remove(outFile_d2)
+            os.remove(outFile_h2)
+    else:
+        try:
+            if legacy:
+                output_data = np.loadtxt(outFile_base)
+            else:
+                output_data['out'] = np.loadtxt(outFile_base)
+        finally:
+            os.remove(outFile_base)
+    return output_data
+
+def tiseanio(command, *args, data=None, silent=False, legacy=True):
     """ TISEAN input/output wrapper.
 
         Accept numpy array 'data' - run 'command' on this and return result.
@@ -89,14 +132,13 @@ def tiseanio(command, *args, data=None, silent=False):
         # Communicate with the subprocess
         (_, err_bytes) = subp.communicate()
         # Read the temporary 'out' file
-        res = np.loadtxt(fullname_out)#, delimiter='\t')
+        res = _output_parser_remover(command, fullname_out, legacy)
         # We will read this
         err_string = err_bytes.decode('utf-8')
 
     # Cleanup
     finally:
         os.remove(fullname_in)
-        os.remove(fullname_out)
 
     if not silent:
         print(err_string)
@@ -104,8 +146,7 @@ def tiseanio(command, *args, data=None, silent=False):
     # We assume that the user wants the (error) message as well.
     return res, err_string
 
-
-def tiseano(command, *args, silent=False):
+def tiseano(command, *args, silent=False, legacy=True):
     """ TISEAN output wrapper.
 
         Run 'command' and return result.
@@ -145,13 +186,13 @@ def tiseano(command, *args, silent=False):
         # Communicate with the subprocess
         (_, err_bytes) = subp.communicate()
         # Read the temporary 'out' file
-        res = np.loadtxt(fullname_out)
+        res = _output_parser_remover(command, fullname_out, legacy)
         # We will read this
         err_string = err_bytes.decode('utf-8')
 
     # Cleanup
     finally:
-        os.remove(fullname_out)
+        pass
 
     if not silent:
         print(err_string)
