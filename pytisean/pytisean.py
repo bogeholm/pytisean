@@ -38,6 +38,12 @@ def genfilename():
     """
     return PREFIXSTR + strnow() + '_'
 
+def _gen_tmpFolder():
+    """ generate a temporary folder
+    """
+    return tempfile.mkdtemp(prefix=genfilename(),
+                            dir=DIRSTR)
+
 def gentmpfile():
     """ Generate temporary file and return file handle.
     """
@@ -99,16 +105,16 @@ def tiseanio(command, *args, data=None, silent=False, legacy=True):
     res = None
     err_string = 'Something failed!'
 
+    workspace = _gen_tmpFolder()
+
     # If user specifies '-o' the save routine below will fail.
     if '-o' in args:
         raise ValueError('User is not allowed to specify an output file.')
 
     # Handles to temporary files
-    tf_in = gentmpfile()
-    tf_out = gentmpfile()
-    # Full names
-    fullname_in = tf_in[1]
-    fullname_out = tf_out[1]
+    if data is not None:
+        fullname_in = os.path.join(workspace, "inFile")
+    fullname_out = os.path.join(workspace, "outFile")
 
     # If no further args are specified, run this
     if not args:
@@ -117,12 +123,16 @@ def tiseanio(command, *args, data=None, silent=False, legacy=True):
     else:
         # User can specify float args - we convert
         arglist = [str(a) for a in args]
-        commandargs = [command, fullname_in] + arglist + ['-o', fullname_out]
+        if data is not None:
+            commandargs = [command, fullname_in] + arglist + ['-o', fullname_out]
+        else:
+            commandargs = [command] + arglist + ['-o', fullname_out]
 
     # We will clean up irregardless of following success.
     try:
         # Save the input to the temporary 'in' file
-        np.savetxt(fullname_in, data, delimiter='\t')
+        if data is not None:
+            np.savetxt(fullname_in, data, delimiter='\t')
 
         # Here we call TISEAN (or something else?)
         subp = subprocess.Popen(commandargs,
@@ -138,7 +148,9 @@ def tiseanio(command, *args, data=None, silent=False, legacy=True):
 
     # Cleanup
     finally:
-        os.remove(fullname_in)
+        if data is not None:
+            os.remove(fullname_in)
+        os.rmdir(workspace)  # all leftover files within will be removed
 
     if not silent:
         print(err_string)
@@ -153,49 +165,5 @@ def tiseano(command, *args, silent=False, legacy=True):
 
         This function is meant as a wrapper around the TISEAN package.
     """
-    # Return values if 'command' (or something else) fails
-    res = None
-    err_string = 'Something failed!'
-
-    # Check for user specified args
-    if '-o' in args:
-        raise ValueError('User is not allowed to specify an output file.')
-
-    # Handle to temporary file
-    tf_out = gentmpfile()
-    # Full names
-    fullname_out = tf_out[1]
-
-    # If no further args are specified, run this
-    if not args:
-        commandargs = [command, '-o', fullname_out]
-    # Otherwise, we concatenate the args and command
-    else:
-        # User can specify float args - we convert
-        arglist = [str(a) for a in args]
-        commandargs = [command] + arglist + ['-o', fullname_out]
-
-    # We will clean up irregardless of following success.
-    try:
-        # Here we call TISEAN (or something else?)
-        subp = subprocess.Popen(commandargs,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE,
-                                shell=False)
-
-        # Communicate with the subprocess
-        (_, err_bytes) = subp.communicate()
-        # Read the temporary 'out' file
-        res = _output_parser_remover(command, fullname_out, legacy)
-        # We will read this
-        err_string = err_bytes.decode('utf-8')
-
-    # Cleanup
-    finally:
-        pass
-
-    if not silent:
-        print(err_string)
-
-    # We assume that the user wants the (error) message as well.
-    return res, err_string
+    return tiseanio(command, *args, data=None,
+                    silent=silent, legacy=legacy)
