@@ -150,7 +150,19 @@ def tiseanio(command, *args, data=None, silent=False, legacy=True):
     finally:
         if data is not None:
             os.remove(fullname_in)
-        os.rmdir(workspace)  # all leftover files within will be removed
+        try:
+            os.rmdir(workspace)  # all leftover files within will be removed
+        except OSError:
+            print("Additional non-data files were created")
+            if not silent:
+                print("\tNonsilent mode chosen, displaying additional content:\n")
+            for remnant_file in os.listdir(workspace):
+                if not silent:
+                    print("File {} contains:".format(remnant_file))
+                    with open(os.path.join(workspace, remnant_file)) as remnant_content:
+                        print(remnant_content.read())
+                os.remove(os.path.join(workspace, remnant_file))
+            os.rmdir(workspace)
 
     if not silent:
         print(err_string)
