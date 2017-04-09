@@ -9,14 +9,13 @@ Preprint available:
 [html](http://www.mpipks-dresden.mpg.de/~tisean/Tisean_3.0.1/index.html),
 [other](http://www.mpipks-dresden.mpg.de/~tisean/Tisean_3.0.1/index.html).
 
-<div class="alert alert-warning">
-  <strong>`pytisean` Does not yet support `TISEAN` functions with multiple output files such as `d2`.</strong>
-</div>
 
 ### Prerequisites
 * `TISEAN` must be installed and in your path - the code is not included here
 * This software has so far only been tested on OS X but  should be easy to port to Linux/Windows. Suggestions are welcome!
 
+
+### How to use
 To use this package first import `pytisean`, `numpy` and `matplotlib`:
 
 ```python
@@ -29,7 +28,20 @@ import numpy as np
 1. `tiseano` for TISEAN functions that do not need an input file,
 2. `tiseanio` for functions that **do** need an input file.
 
-Both return a result and the message that `TISEAN` prints to `stdout` or `stderr`. Examples:
+Both return a result and the message that `TISEAN` prints to `stdout` or
+`stderr`.
+
+For single output Tisean commands, `stdout` is an array.  In case of Tisean
+commands generating multiple output, the `stdout` will be a dictionary with
+content grouped by their extensions as keywords, e.g. `stdout` from `d2` is a
+dictionary with 3 keys, `{"c2","d2","h2"}`, standing for autocorrelation,
+correlation dimension, and entropy respectively.
+
+**NOTE** Currently for multiple output tisean command, PyTisean only expects
+`d2`. If you have other multiple output commands need to be used with PyTisean,
+please inform us.
+
+Examples:
 
 ```python
 # Generate 5000 iterates of the henon map
@@ -73,6 +85,43 @@ plt.show()
 
 ![Data and autocorrelation](doc/corr.png "Data and autocorrelation")
 
+
+```python
+
+# generate Lorenz
+stdout, msg = tiseano("lorenz", "-l", "2000")
+
+# Multiple output command example (d2)
+d2_out, msg = tiseanio("d2", '-N', '0','-c', "1", data=stdout)
+
+# plot output c2
+plt.scatter(d2_out["c2"][:,0], d2_out["c2"][:,1],s=0.1)
+plt.yscale('log')
+plt.ylim([1e-7,1])
+plt.xscale('log')
+plt.xlabel("length scale")
+plt.ylabel("correlation sum")
+plt.show()
+# plot output d2
+plt.scatter(d2_out["d2"][:,0], d2_out["d2"][:,1],s=0.1)
+#plt.yscale('log')
+plt.xscale('log')
+plt.xlabel("length scale")
+plt.ylabel("correlation dimension")
+plt.show()
+# plot output h2
+plt.scatter(d2_out["h2"][:,0], d2_out["h2"][:,1],s=0.1)
+#plt.yscale('log')
+plt.xscale('log')
+plt.xlabel("length scale")
+plt.ylabel("correlation entropy")
+plt.show()
+```
+
+![Correlation Sum](doc/lorenz-c2.png "Correlation Sum")
+![Correlation Dimension](doc/lorenz-d2.png "Correlation Dimension")
+![Correlation Entropy](doc/lorenz-h2.png "Correlation Entropy")
+
 ## TODO
-* Add support for multiple output files
-* Add support for Windows and Linux
+* Make sure output parser support all tisean commands
+* Add support for Windows
